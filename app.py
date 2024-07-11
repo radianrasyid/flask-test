@@ -2,10 +2,10 @@
 import sys
 import os
 from flask_cors import CORS
+from pathlib import Path
 from flask import Flask, send_from_directory, jsonify
 from flask_restx import Api, Resource
-
-
+sys.path.append(str(Path(__file__).parent))
 # Tambahkan direktori 'apis' ke dalam sys.path
 # current_dir = os.path.dirname(os.path.realpath(__file__))
 # apis_dir = os.path.join(current_dir, 'apis')
@@ -17,7 +17,7 @@ def create_app():
     api = Api(app)
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Inisialisasi pool koneksi
+    # Inisialisasi pool koneksi
     from api.db import ConnectionPool, initializeConnectionPool, pool, psycopg2, atexit
     initializeConnectionPool()
 
@@ -48,7 +48,7 @@ def create_app():
     
     @app.route('/')
     def hello_world():
-        return jsonify({"message": "Hello World"}), 200
+        return jsonify({"message": "Hello World"})
 
     return app
     
