@@ -3,8 +3,10 @@ import psycopg2.pool
 import atexit
 from dotenv import load_dotenv
 
-pool = None 
+# Load environment variables
+load_dotenv()
 
+pool = None 
 
 class ConnectionPool:
     def __init__(self):
@@ -22,22 +24,28 @@ class ConnectionPool:
             )
         except psycopg2.OperationalError as e:
             print(f"Failed to connect to database: {e}")
+            self.pool = None
 
     def get_connection(self):
-        return self.pool.getconn()
+        if self.pool:
+            return self.pool.getconn()
+        else:
+            raise Exception("Connection pool is not initialized")
 
     def return_connection(self, conn):
-        self.pool.putconn(conn)
+        if self.pool:
+            self.pool.putconn(conn)
 
     def close_all_connections(self):
-        self.pool.closeall()
+        if self.pool:
+            self.pool.closeall()
 
 def initializeConnectionPool():
     global pool
     pool = ConnectionPool()
     print(pool)
 
-
+# Uncomment the following line if you want to close connections on exit
 # atexit.register(lambda: pool.close_all_connections() if pool else None)
 
 # __all__ = ['pool', 'ConnectionPool', 'initializeConnectionPool']
